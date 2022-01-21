@@ -41,6 +41,7 @@ namespace Tasking
 
         // Публичная только для чтения ссылка на список задач
         public List<TaskingTask> TaskList { get { return taskList; } }
+        public int PossibleTaskStatuses = 4;
 
         // Эвенты для обновления UI
         [SerializeField] UnityEvent<TaskingTask> TaskCreated;
