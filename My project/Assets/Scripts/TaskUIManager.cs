@@ -51,21 +51,37 @@ namespace Tasking
             taskStatusName.Add(TaskManager.TaskingStatus.REVIEWING, "Рассматривается");
         }
 
-        public void OnTaskCreated(TaskManager.TaskingTask newTask)
+        public void OnTasksClear()
+        {
+            taskUIObjects.Clear();
+
+            if (taskUIList.transform.transform.childCount > 0)
+            {
+                for(int i = 0; i < taskUIList.transform.transform.childCount; i++)
+                {
+                    Destroy(taskUIList.transform.transform.GetChild(i).gameObject);
+                }
+            }
+
+            UpdateScrollAreaSize();
+            UpdatePieChart();
+        }
+
+        public void OnTaskCreated(TaskingTask newTask)
         {
             GameObject newTaskUI = Instantiate(taskUIPrefab, taskUIList.transform);
             taskUIObjects.Add(newTaskUI.GetComponent<TaskUI>());
             newTaskUI.GetComponent<TaskUI>().SetInformation(newTask);
-            UpdateScrollAreaSize();
 
+            UpdateScrollAreaSize();
             UpdatePieChart();
         }
 
-        public void OnTaskDeleted(TaskManager.TaskingTask newTask)
+        public void OnTaskDeleted(string taskId)
         {
             foreach(TaskUI thisTaskUI in taskUIObjects)
             {
-                if (thisTaskUI.TaskName == newTask.name)
+                if (thisTaskUI.TaskName == taskId)
                 {
                     Destroy(thisTaskUI.gameObject);
                     taskUIObjects.Remove(thisTaskUI);
@@ -77,7 +93,7 @@ namespace Tasking
             }
         }
 
-        public void OnTaskUpdated(TaskManager.TaskingTask newTask)
+        public void OnTaskUpdated(TaskingTask newTask)
         {
             UpdatePieChart();
         }

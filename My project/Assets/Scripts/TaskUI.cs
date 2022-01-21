@@ -30,8 +30,10 @@ namespace Tasking
 
         // Метод
         // Извлекает информацию задачи и передаёт её UI элементам
-        public void SetInformation(TaskManager.TaskingTask myTask)
+        public void SetInformation(TaskingTask receivedTask)
         {
+            thisTaskName = receivedTask.id;
+
             // Заполнить dropdown опции возможными статусами задачи
             for (int i = 0; i < TaskManager.Instance.PossibleTaskStatuses; i++)
             {
@@ -40,17 +42,19 @@ namespace Tasking
             }
 
             // Задать текст название задачи, кому поручено, текущий статус, дату окончания
-            taskName.text = myTask.name;
-            taskAssignee.text = myTask.assignee;
-            taskStatusDropdown.value = (int)myTask.status;
-            taskDueTime.text = new DateTime(DateTime.Now.Year, myTask.month + 1, myTask.day + 1).ToString("MMMM dd");
+            taskName.text = receivedTask.name;
+            taskAssignee.text = receivedTask.assignee;
+            taskStatusDropdown.value = (int)receivedTask.status;
+            taskDueTime.text = new DateTime(DateTime.Now.Year, receivedTask.month, receivedTask.day).ToString("MMMM dd");
 
             // Поставить цвет фона переключателя статуса
-            taskStatusBackground.color = TaskUIManager.Instance.TaskColor[myTask.status];
+            taskStatusBackground.color = TaskUIManager.Instance.TaskColor[(TaskManager.TaskingStatus)receivedTask.status];
 
             // Скопировать дату окончания
-            dueDay = myTask.day;
-            dueMonth = myTask.month;
+            dueDay = receivedTask.day;
+            dueMonth = receivedTask.month;
+
+            taskStatusDropdown.onValueChanged.AddListener(UpdateStatus);
         }
 
         // Метод для обновления статуса этой задачи
@@ -59,6 +63,11 @@ namespace Tasking
             TaskManager.Instance.UpdateTask(taskName.text, taskAssignee.text, (TaskManager.TaskingStatus)newState, dueDay, dueMonth);
             // Поставить цвет фона переключателя статуса
             taskStatusBackground.color = TaskUIManager.Instance.TaskColor[(TaskManager.TaskingStatus)newState];
+        }
+
+        private void OnDestroy()
+        {
+            taskStatusDropdown.onValueChanged.RemoveAllListeners();
         }
     }
 }

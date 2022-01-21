@@ -18,17 +18,18 @@ namespace Tasking
             string[] jsonInformationArray = new string[TaskManager.Instance.TaskList.Count];
 
             int count = 0;
-            foreach(TaskManager.TaskingTask thisTask in TaskManager.Instance.TaskList)
+            foreach(TaskingTask thisTask in TaskManager.Instance.TaskList)
             {
                 // Трансформировать TaskingTask объект с информацией в json
                 // Записать полученный string в массив
-                jsonInformationArray[count] = JsonConvert.SerializeObject(thisTask);
+                Debug.Log(thisTask.day + " " + thisTask.month);
+                jsonInformationArray[count] = JsonConvert.SerializeObject(thisTask, Formatting.Indented);
                 // Перейти к следующей ячейке
                 count++;
             }
 
             // Вернуть один Json файл со всей информацией
-            return JsonConvert.SerializeObject(jsonInformationArray);
+            return JsonConvert.SerializeObject(jsonInformationArray, Formatting.Indented);
         }
         // Метод для конвертирования json информации в список задач для TaskManager
         private void FromJsonToTasks(string json)
@@ -39,13 +40,11 @@ namespace Tasking
             // Разбить полученный json файл на массив с отдельными json задачами
             string[] jsonInformationArray = JsonConvert.DeserializeObject<string[]>(json);
 
-
-            foreach (string jsonTaskInformation in jsonInformationArray)
+            for (int i = 0; i < jsonInformationArray.Length; i++)
             {
                 // Трансформировать полученую json инфо в TaskingTask объект.
-                TaskManager.TaskingTask receivedTask = JsonConvert.DeserializeObject<TaskManager.TaskingTask>(jsonTaskInformation);
                 // Добавить полученный объект задачи в новый список задач
-                TaskManager.Instance.CreateTask(receivedTask);
+                TaskManager.Instance.CreateTask(JsonConvert.DeserializeObject<TaskingTask>(jsonInformationArray[i]));
             }
         }
 
