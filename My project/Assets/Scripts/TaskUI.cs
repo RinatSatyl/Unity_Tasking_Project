@@ -19,10 +19,12 @@ namespace Tasking
         [SerializeField] TMP_Text taskDueTime;
         [SerializeField] TMP_Dropdown taskStatusDropdown;
 
-        // оранжевый
-        Color orange = new Color(255, 215, 0);
         // дата задачи
         DateTime dueDate = new DateTime();
+        string thisTaskName = string.Empty;
+
+        // Публичная ссылка на taskName
+        public string TaskName { get { return thisTaskName; } }
 
         private void Start()
         {
@@ -45,7 +47,7 @@ namespace Tasking
             taskDueTime.text = myTask.dueDate.ToString("MMMM dd");
 
             // Поставить цвет фона переключателя статуса
-            SetOptionColorBasedOnStatus(taskStatusBackground.color, myTask.status);
+            taskStatusBackground.color = TaskUIManager.Instance.TaskColor[myTask.status];
 
             // Скопировать дату окончания
             dueDate = myTask.dueDate;
@@ -55,29 +57,6 @@ namespace Tasking
         public void UpdateStatus(int newState)
         {
             TaskManager.Instance.UpdateTask(taskName.text, taskAssignee.text, (TaskManager.TaskingStatus)newState, dueDate);
-        }
-
-        // Метод для установки цвета в зависимости от указаного статуса
-        void SetOptionColorBasedOnStatus(Color color, TaskManager.TaskingStatus status)
-        {
-            switch (status)
-            {
-                case TaskManager.TaskingStatus.COMPLETED:
-                    color = Color.green;
-                    break;
-                case TaskManager.TaskingStatus.IN_PROGRESS:
-                    color = orange;
-                    break;
-                case TaskManager.TaskingStatus.OPEN:
-                    color = Color.gray;
-                    break;
-                case TaskManager.TaskingStatus.REVIEWING:
-                    color = Color.yellow;
-                    break;
-                default:
-                    color = Color.white;
-                    break;
-            }
         }
     }
 }

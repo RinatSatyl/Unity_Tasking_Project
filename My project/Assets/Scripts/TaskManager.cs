@@ -51,6 +51,11 @@ namespace Tasking
         // Статичная ссылка на TaskManager, для легкого доступа
         public static TaskManager Instance;
 
+        private void Start()
+        {
+            Instance = this;
+        }
+
         // Метод добавляющии задачу с указаной информацией в список задач 
         public void CreateTask(string taskName, string taskAssignee, TaskingStatus taskStatus, DateTime taskDueDate)
         {
@@ -101,6 +106,14 @@ namespace Tasking
         public void ApplyNewTaskList(List<TaskingTask> newTaskList)
         {
             taskList = newTaskList;
+        }
+
+        private void Update()
+        {
+            if (taskList.Count < 5)
+            {
+                CreateTask("Тестовое задача", "Алексеев Алексей", TaskingStatus.COMPLETED, DateTime.Now);
+            }
         }
     }
 }
