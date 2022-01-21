@@ -28,46 +28,46 @@ namespace PieChart.ViitorCloud
         // Update is called once per frame
         void FixedUpdate()
         {
-            if (Input.GetMouseButtonDown(0))
-            {
-                Ray ray = Maincamera.ScreenPointToRay(Input.mousePosition);
-                if (Physics.Raycast(ray, out hit))
-                {
-                    if (targetedObject != hit.collider.gameObject)
-                        hit.collider.gameObject.GetComponent<PartProperties>().MyCurrntPosition = hit.collider.transform.position;
-                    if (targetedObject != Maincamera.gameObject && hit.collider != null)
-                    {
-                        if (targetedObject != hit.collider.gameObject)
-                        {
-                            targetedObject.transform.position = targetedObject.GetComponent<PartProperties>().MyCurrntPosition;
-                            targetedObject = hit.collider.gameObject;
-                        }
-                    }
-                    if (targetedObject == Maincamera.gameObject)
-                        targetedObject = hit.collider.gameObject;
-                }
-                else
-                {
-                    foreach (KeyValuePair<GameObject, GameObject> item in allParsObjectAndCanvasObjectDict)
-                    {
-                        if (item.Value.GetComponent<Image>().color.a < 0.2)
-                            ReverseAnimation(item.Value.GetComponent<Animation>(), "reducethealpha");
-                    }
-                    if (targetedObject != null)
-                    {
-                        if (targetedObject.GetComponent<PartProperties>() != null)
-                            targetedObject.transform.position = targetedObject.GetComponent<PartProperties>().MyCurrntPosition;
-                        targetedObject = Maincamera.gameObject;
-                    }
-                }
-            }
-            if (hit.collider != null)
-            {
-                float dis = Vector3.Distance(hit.transform.position, hit.transform.GetComponent<PartProperties>().forward);
-                if (dis > 1.1f)
-                    hit.transform.position = Vector3.Lerp(hit.transform.position, hit.transform.GetComponent<PartProperties>().forward, 1 * Time.deltaTime);
-            }
-            Raycast();
+            //if (Input.GetMouseButtonDown(0))
+            //{
+            //    Ray ray = Maincamera.ScreenPointToRay(Input.mousePosition);
+            //    if (Physics.Raycast(ray, out hit))
+            //    {
+            //        if (targetedObject != hit.collider.gameObject)
+            //            hit.collider.gameObject.GetComponent<PartProperties>().MyCurrntPosition = hit.collider.transform.position;
+            //        if (targetedObject != Maincamera.gameObject && hit.collider != null)
+            //        {
+            //            if (targetedObject != hit.collider.gameObject)
+            //            {
+            //                targetedObject.transform.position = targetedObject.GetComponent<PartProperties>().MyCurrntPosition;
+            //                targetedObject = hit.collider.gameObject;
+            //            }
+            //        }
+            //        if (targetedObject == Maincamera.gameObject)
+            //            targetedObject = hit.collider.gameObject;
+            //    }
+            //    else
+            //    {
+            //        foreach (KeyValuePair<GameObject, GameObject> item in allParsObjectAndCanvasObjectDict)
+            //        {
+            //            if (item.Value.GetComponent<Image>().color.a < 0.2)
+            //                ReverseAnimation(item.Value.GetComponent<Animation>(), "reducethealpha");
+            //        }
+            //        if (targetedObject != null)
+            //        {
+            //            if (targetedObject.GetComponent<PartProperties>() != null)
+            //                targetedObject.transform.position = targetedObject.GetComponent<PartProperties>().MyCurrntPosition;
+            //            targetedObject = Maincamera.gameObject;
+            //        }
+            //    }
+            //}
+            //if (hit.collider != null)
+            //{
+            //    float dis = Vector3.Distance(hit.transform.position, hit.transform.GetComponent<PartProperties>().forward);
+            //    if (dis > 1.1f)
+            //        hit.transform.position = Vector3.Lerp(hit.transform.position, hit.transform.GetComponent<PartProperties>().forward, 1 * Time.deltaTime);
+            //}
+            //Raycast();
         }
 
 
@@ -88,7 +88,7 @@ namespace PieChart.ViitorCloud
 
                 tempObject = hit0.collider.gameObject;
                 //tempObject.GetComponent<cakeslice.Outline>().enabled = true;
-                tempObject.GetComponent<PartProperties>().SetAnimation(true);
+                //tempObject.GetComponent<PartProperties>().SetAnimation(true);
             }
             else
             {

@@ -15,9 +15,13 @@ namespace Tasking
         [SerializeField] RectTransform contentTransform;
         [SerializeField] GridLayoutGroup gridLayoutGroup;
         [SerializeField] GameObject pieChartPrefab;
+        [SerializeField] GameObject barGraphPrefab;
 
         GameObject pieChartObject;
+        GameObject barGraphObject;
+
         PieChart.ViitorCloud.PieChart pieChart;
+        BarGraph.VittorCloud.BarGraphGenerator barGraph;
 
         List<TaskUI> taskUIObjects = new List<TaskUI>();
 
@@ -64,7 +68,7 @@ namespace Tasking
             }
 
             UpdateScrollAreaSize();
-            UpdatePieChart();
+            UpdateCharts();
         }
 
         public void OnTaskCreated(TaskingTask newTask)
@@ -74,7 +78,7 @@ namespace Tasking
             newTaskUI.GetComponent<TaskUI>().SetInformation(newTask);
 
             UpdateScrollAreaSize();
-            UpdatePieChart();
+            UpdateCharts();
         }
 
         public void OnTaskDeleted(string taskId)
@@ -87,7 +91,7 @@ namespace Tasking
                     taskUIObjects.Remove(thisTaskUI);
                     UpdateScrollAreaSize();
 
-                    UpdatePieChart();
+                    UpdateCharts();
                     return;
                 }
             }
@@ -95,7 +99,7 @@ namespace Tasking
 
         public void OnTaskUpdated(TaskingTask newTask)
         {
-            UpdatePieChart();
+            UpdateCharts();
         }
 
         void UpdateScrollAreaSize()
@@ -103,11 +107,16 @@ namespace Tasking
             contentTransform.sizeDelta = new Vector2(gridLayoutGroup.cellSize.x, gridLayoutGroup.cellSize.y * taskUIObjects.Count);
         }
 
-        void UpdatePieChart()
+        void UpdateCharts()
         {
             if (pieChartObject != null)
             {
                 Destroy(pieChartObject);
+            }
+
+            if (barGraphObject != null)
+            {
+                Destroy(barGraphObject);
             }
 
             if (taskUIObjects.Count > 0)
@@ -126,6 +135,11 @@ namespace Tasking
 
                 pieChartObject = Instantiate(pieChartPrefab, gameObject.transform.parent.transform);
                 pieChart = pieChartObject.GetComponent<PieChart.ViitorCloud.PieChart>();
+                
+                barGraphObject = Instantiate(barGraphPrefab, gameObject.transform.parent.transform);
+                barGraph = barGraphObject.GetComponent<BarGraph.VittorCloud.BarGraphGenerator>();
+
+                barGraph.segmentSizeOnYaxis = 0.4f;
 
                 Color[] customColors = new Color[TaskManager.Instance.PossibleTaskStatuses];
 
@@ -133,6 +147,29 @@ namespace Tasking
                 {
                     customColors[i] = taskColor[(TaskManager.TaskingStatus)i];
                 }
+
+                List<BarGraph.VittorCloud.BarGraphDataSet> barGraphDataSet = new List<BarGraph.VittorCloud.BarGraphDataSet>();
+
+                for (int i = 0; i < TaskManager.Instance.PossibleTaskStatuses; i++)
+                {
+                    BarGraph.VittorCloud.BarGraphDataSet newData = new BarGraph.VittorCloud.BarGraphDataSet();
+
+                    newData.barColor = taskColor[(TaskManager.TaskingStatus)i];
+                    newData.GroupName = "";
+
+                    BarGraph.VittorCloud.XYBarValues barPos = new BarGraph.VittorCloud.XYBarValues()
+                    {
+                        XValue = "",
+                        YValue = statusStatistic[i]
+                    };
+
+                    newData.ListOfBars = new List<BarGraph.VittorCloud.XYBarValues>();
+                    newData.ListOfBars.Add(barPos);
+
+                    barGraphDataSet.Add(newData);
+                }
+
+                barGraph.GeneratBarGraph(barGraphDataSet);
 
                 pieChart.customColors = customColors;
                 pieChart.segments = TaskManager.Instance.PossibleTaskStatuses;

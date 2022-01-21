@@ -34,7 +34,7 @@ namespace BarGraph.VittorCloud
         {
             // Debug.Log("SetBarLabelVisible : " + LabelContainer.transform.localScale.y, this.gameObject);
             originalYscale = LabelContainer.transform.localScale.y;
-            Debug.Log("originalYscale : " + LabelContainer.transform.lossyScale.y, this.gameObject);
+            //Debug.Log("originalYscale : " + LabelContainer.transform.lossyScale.y, this.gameObject);
             LabelContainer.SetActive(false);
 
         }

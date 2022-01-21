@@ -801,8 +801,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.00003667523}
-  m_SizeDelta: {x: 0, y: 953.7117}
+  m_AnchoredPosition: {x: 0, y: 0.00020362913}
+  m_SizeDelta: {x: 0, y: 899.99927}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &221722700
 MonoBehaviour:
@@ -2706,6 +2706,7 @@ MonoBehaviour:
   contentTransform: {fileID: 221722699}
   gridLayoutGroup: {fileID: 221722700}
   pieChartPrefab: {fileID: 7326394679380690533, guid: fc962692a6d011247bec7a448e77c783, type: 3}
+  barGraphPrefab: {fileID: 8020276448538122830, guid: c6225a7e5fb2de24db6bb7f05d57ebfb, type: 3}
 --- !u!1 &733057321
 GameObject:
   m_ObjectHideFlags: 0
@@ -3356,7 +3357,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 849682569}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: -859}
   m_LocalScale: {x: 2, y: 2, z: 1}
   m_Children:
   - {fileID: 686119306}
@@ -7495,8 +7496,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1055172541}
   m_HandleRect: {fileID: 1055172540}
   m_Direction: 2
-  m_Value: 0.9999966
-  m_Size: 0.9436813
+  m_Value: 0
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
