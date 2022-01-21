@@ -66,6 +66,11 @@ namespace Tasking
             TaskingTask newTask = new TaskingTask(taskName, taskAssignee, taskStatus, day, month);
 
             // Добавит объект в список задач
+            CreateTask(newTask);
+        }
+        public void CreateTask(TaskingTask newTask)
+        {
+            // Добавит объект в список задач
             taskList.Add(newTask);
 
             // Вызвать эвент с ссылкой на объект задачи
@@ -102,21 +107,14 @@ namespace Tasking
 
             taskList.RemoveAt(count);
             taskList.Insert(count, updatedTask);
+
+            // Вызвать эвент с ссылкой на объект задачи
+            TaskUpdated.Invoke(updatedTask);
         }
         // Метод для зачистки списка задач
         public void ClearTaskList()
         {
             taskList.Clear();
-        }
-        // Метод для замены текущего списка полученым из вне
-        public void ApplyNewTaskList(List<TaskingTask> newTaskList)
-        {
-            taskList = newTaskList;
-            foreach (TaskingTask thisTask in taskList)
-            {
-                // Вызвать эвент с ссылкой на объект задачи
-                TaskCreated.Invoke(thisTask);
-            }
         }
     }
 }

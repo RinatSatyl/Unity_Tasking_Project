@@ -87,7 +87,7 @@ namespace PieChart.ViitorCloud
                     }
 
                 tempObject = hit0.collider.gameObject;
-                tempObject.GetComponent<cakeslice.Outline>().enabled = true;
+                //tempObject.GetComponent<cakeslice.Outline>().enabled = true;
                 tempObject.GetComponent<PartProperties>().SetAnimation(true);
             }
             else

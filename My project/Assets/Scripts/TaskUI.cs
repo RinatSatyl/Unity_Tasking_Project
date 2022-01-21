@@ -26,6 +26,7 @@ namespace Tasking
 
         // Публичная ссылка на taskName
         public string TaskName { get { return thisTaskName; } }
+        public int TaskStatus { get { return taskStatusDropdown.value; } }
 
         // Метод
         // Извлекает информацию задачи и передаёт её UI элементам
@@ -42,7 +43,7 @@ namespace Tasking
             taskName.text = myTask.name;
             taskAssignee.text = myTask.assignee;
             taskStatusDropdown.value = (int)myTask.status;
-            taskDueTime.text = new DateTime(DateTime.Now.Year, myTask.month, myTask.day).ToString("MMMM dd");
+            taskDueTime.text = new DateTime(DateTime.Now.Year, myTask.month + 1, myTask.day + 1).ToString("MMMM dd");
 
             // Поставить цвет фона переключателя статуса
             taskStatusBackground.color = TaskUIManager.Instance.TaskColor[myTask.status];

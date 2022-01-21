@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using PieChart.ViitorCloud;
 
 namespace Tasking
 {
@@ -13,10 +14,17 @@ namespace Tasking
         [SerializeField] GameObject taskUIList;
         [SerializeField] RectTransform contentTransform;
         [SerializeField] GridLayoutGroup gridLayoutGroup;
+        [SerializeField] GameObject pieChartPrefab;
+
+        GameObject pieChartObject;
+        PieChart.ViitorCloud.PieChart pieChart;
 
         List<TaskUI> taskUIObjects = new List<TaskUI>();
 
         public static TaskUIManager Instance;
+
+        private float[] statusStatistic = new float[0];
+
         // Список цветов огранизованные по статусу задачи
         private Dictionary<TaskManager.TaskingStatus, Color> taskColor = new Dictionary<TaskManager.TaskingStatus, Color>();
         // Список читаемого названия статуса задачи
@@ -49,6 +57,8 @@ namespace Tasking
             taskUIObjects.Add(newTaskUI.GetComponent<TaskUI>());
             newTaskUI.GetComponent<TaskUI>().SetInformation(newTask);
             UpdateScrollAreaSize();
+
+            UpdatePieChart();
         }
 
         public void OnTaskDeleted(TaskManager.TaskingTask newTask)
@@ -60,6 +70,8 @@ namespace Tasking
                     Destroy(thisTaskUI.gameObject);
                     taskUIObjects.Remove(thisTaskUI);
                     UpdateScrollAreaSize();
+
+                    UpdatePieChart();
                     return;
                 }
             }
@@ -67,19 +79,49 @@ namespace Tasking
 
         public void OnTaskUpdated(TaskManager.TaskingTask newTask)
         {
-            foreach (TaskUI thisTaskUI in taskUIObjects)
-            {
-                if (thisTaskUI.TaskName == newTask.name)
-                {
-                    thisTaskUI.SetInformation(newTask);
-                    return;
-                }
-            }
+            UpdatePieChart();
         }
 
         void UpdateScrollAreaSize()
         {
             contentTransform.sizeDelta = new Vector2(gridLayoutGroup.cellSize.x, gridLayoutGroup.cellSize.y * taskUIObjects.Count);
+        }
+
+        void UpdatePieChart()
+        {
+            if (pieChartObject != null)
+            {
+                Destroy(pieChartObject);
+            }
+
+            if (taskUIObjects.Count > 0)
+            {
+                statusStatistic = new float[TaskManager.Instance.PossibleTaskStatuses];
+
+                for (int i = 0; i < statusStatistic.Length; i++)
+                {
+                    statusStatistic[i] = 0;
+                }
+
+                foreach(TaskUI thisTask in taskUIObjects)
+                {
+                    statusStatistic[thisTask.TaskStatus]++;
+                }
+
+                pieChartObject = Instantiate(pieChartPrefab, gameObject.transform.parent.transform);
+                pieChart = pieChartObject.GetComponent<PieChart.ViitorCloud.PieChart>();
+
+                Color[] customColors = new Color[TaskManager.Instance.PossibleTaskStatuses];
+
+                for(int i = 0; i < TaskManager.Instance.PossibleTaskStatuses; i++)
+                {
+                    customColors[i] = taskColor[(TaskManager.TaskingStatus)i];
+                }
+
+                pieChart.customColors = customColors;
+                pieChart.segments = TaskManager.Instance.PossibleTaskStatuses;
+                pieChart.Data = statusStatistic;
+            }
         }
     }
 }

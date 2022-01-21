@@ -31,7 +31,7 @@ namespace Tasking
             return JsonConvert.SerializeObject(jsonInformationArray);
         }
         // Метод для конвертирования json информации в список задач для TaskManager
-        private List<TaskManager.TaskingTask> FromJsonToTasks(string json)
+        private void FromJsonToTasks(string json)
         {
             // Почистить список задач
             TaskManager.Instance.ClearTaskList();
@@ -39,19 +39,14 @@ namespace Tasking
             // Разбить полученный json файл на массив с отдельными json задачами
             string[] jsonInformationArray = JsonConvert.DeserializeObject<string[]>(json);
 
-            // Создать временный новый список задач
-            List<TaskManager.TaskingTask> newTaskList = new List<TaskManager.TaskingTask>();
 
             foreach (string jsonTaskInformation in jsonInformationArray)
             {
-                Debug.Log(jsonTaskInformation);
                 // Трансформировать полученую json инфо в TaskingTask объект.
                 TaskManager.TaskingTask receivedTask = JsonConvert.DeserializeObject<TaskManager.TaskingTask>(jsonTaskInformation);
                 // Добавить полученный объект задачи в новый список задач
-                newTaskList.Add(receivedTask);
+                TaskManager.Instance.CreateTask(receivedTask);
             }
-
-            return newTaskList;
         }
 
         // Метод для сохранения задач в формате json в PlayerPrefs
@@ -66,7 +61,7 @@ namespace Tasking
         {
             string tasksJson = PlayerPrefs.GetString(SAVED_TASKS_PLAYERPREFS_KEY);
             Debug.Log(tasksJson);
-            TaskManager.Instance.ApplyNewTaskList(FromJsonToTasks(tasksJson));
+            FromJsonToTasks(tasksJson);
         }
     }
 }
