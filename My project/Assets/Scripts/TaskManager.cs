@@ -17,17 +17,20 @@ namespace Tasking
             public string name;
             public string assignee;
             public TaskingStatus status;
-            public DateTime dueDate;
+            public int day;
+            public int month;
 
-            public TaskingTask(string name, string assignee, TaskingStatus status, DateTime dueDate)
+            public TaskingTask(string name, string assignee, TaskingStatus status, int day, int month)
             {
                 this.name = name;
                 this.assignee = assignee;
                 this.status = status;
-                this.dueDate = dueDate;
+                this.day = day;
+                this.month = month;
             }
         }
         // Статус задачи
+        [System.Serializable]
         public enum TaskingStatus : int
         {
             OPEN = 0,
@@ -57,10 +60,10 @@ namespace Tasking
         }
 
         // Метод добавляющии задачу с указаной информацией в список задач 
-        public void CreateTask(string taskName, string taskAssignee, TaskingStatus taskStatus, DateTime taskDueDate)
+        public void CreateTask(string taskName, string taskAssignee, TaskingStatus taskStatus, int day, int month)
         {
             // Создать новый объект задачи
-            TaskingTask newTask = new TaskingTask(taskName, taskAssignee, taskStatus, taskDueDate);
+            TaskingTask newTask = new TaskingTask(taskName, taskAssignee, taskStatus, day, month);
 
             // Добавит объект в список задач
             taskList.Add(newTask);
@@ -81,21 +84,24 @@ namespace Tasking
             }
         }
         // Метод для обновления информации задачи
-        public void UpdateTask(string taskName, string taskAssignee, TaskingStatus taskStatus, DateTime taskDueDate)
+        public void UpdateTask(string taskName, string taskAssignee, TaskingStatus taskStatus, int day, int month)
         {
-            foreach (TaskingTask taskInList in taskList)
+            // Создать новый объект задачи
+            TaskingTask updatedTask = new TaskingTask(taskName, taskAssignee, taskStatus, day, month);
+
+            int count = 0;
+            foreach (TaskingTask thisTask in taskList)
             {
-                if (taskInList.name == taskName)
+                if (thisTask.name == taskName)
                 {
-                    // Получить ссылку на объект задачи
-                    TaskingTask taskToEdit = taskInList;
-                    // Редактировать информацию
-                    taskToEdit.assignee = taskAssignee;
-                    taskToEdit.status = taskStatus;
-                    taskToEdit.dueDate = taskDueDate;
-                    return;
+                    break;
                 }
+                count++;
             }
+            Debug.Log(count);
+
+            taskList.RemoveAt(count);
+            taskList.Insert(count, updatedTask);
         }
         // Метод для зачистки списка задач
         public void ClearTaskList()
@@ -106,6 +112,11 @@ namespace Tasking
         public void ApplyNewTaskList(List<TaskingTask> newTaskList)
         {
             taskList = newTaskList;
+            foreach (TaskingTask thisTask in taskList)
+            {
+                // Вызвать эвент с ссылкой на объект задачи
+                TaskCreated.Invoke(thisTask);
+            }
         }
     }
 }

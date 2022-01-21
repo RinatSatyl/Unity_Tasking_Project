@@ -26,13 +26,13 @@ namespace Tasking
             // Заполнить dropdown опции возможными статусами задачи
             for (int i = 0; i < TaskManager.Instance.PossibleTaskStatuses; i++)
             {
-                string statusName = ((TaskManager.TaskingStatus)i).ToString(); ;
+                string statusName = TaskUIManager.Instance.TaskStatusName[(TaskManager.TaskingStatus)i];
                 taskStatus.options.Add(new TMP_Dropdown.OptionData(statusName));
             }
 
             for (int i = 0; i < 12; i++)
             {
-                taskDueTimeMonth.options.Add(new TMP_Dropdown.OptionData((i + 1).ToString()));
+                taskDueTimeMonth.options.Add(new TMP_Dropdown.OptionData(new DateTime(DateTime.Now.Year, i + 1, 1).ToString("MMM")));
             }
 
             taskName.text = string.Empty;
@@ -46,6 +46,8 @@ namespace Tasking
 
         public void UpdateDaysInMonth(int value)
         {
+            int currentChoosenDay = taskDueTimeDay.value;
+
             taskDueTimeDay.options.Clear();
 
             for (int i = 0; i < DateTime.DaysInMonth(DateTime.Now.Year, value + 1); i++)
@@ -53,8 +55,12 @@ namespace Tasking
                 taskDueTimeDay.options.Add(new TMP_Dropdown.OptionData((i + 1).ToString()));
             }
 
-            taskDueTimeDay.value = 0;
-            taskDueTimeDay.gameObject.transform.GetChild(0).GetComponent<TMP_Text>().text = taskDueTimeDay.options[0].text;
+            if (currentChoosenDay > taskDueTimeDay.options.Count)
+            {
+                taskDueTimeDay.value = taskDueTimeDay.options.Count;
+            }
+
+            taskDueTimeDay.gameObject.transform.GetChild(0).GetComponent<TMP_Text>().text = taskDueTimeDay.options[taskDueTimeDay.value].text;
         }
 
         public void CreateTask()
@@ -65,7 +71,7 @@ namespace Tasking
                 return;
             }
 
-            TaskManager.Instance.CreateTask(taskName.text, taskAssignee.text, (TaskManager.TaskingStatus)taskStatus.value, new DateTime(DateTime.Now.Year, taskDueTimeMonth.value + 1, taskDueTimeDay.value + 1));
+            TaskManager.Instance.CreateTask(taskName.text, taskAssignee.text, (TaskManager.TaskingStatus)taskStatus.value, taskDueTimeDay.value + 1, taskDueTimeMonth.value + 1);
             gameObject.SetActive(false);
         }
 

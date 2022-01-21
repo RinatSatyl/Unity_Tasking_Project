@@ -20,7 +20,8 @@ namespace Tasking
         [SerializeField] TMP_Dropdown taskStatusDropdown;
 
         // дата задачи
-        DateTime dueDate = new DateTime();
+        int dueDay = 0;
+        int dueMonth = 0;
         string thisTaskName = string.Empty;
 
         // Публичная ссылка на taskName
@@ -33,7 +34,7 @@ namespace Tasking
             // Заполнить dropdown опции возможными статусами задачи
             for (int i = 0; i < TaskManager.Instance.PossibleTaskStatuses; i++)
             {
-                string statusName = ((TaskManager.TaskingStatus)i).ToString(); ;
+                string statusName = TaskUIManager.Instance.TaskStatusName[(TaskManager.TaskingStatus)i];
                 taskStatusDropdown.options.Add(new TMP_Dropdown.OptionData(statusName));
             }
 
@@ -41,19 +42,20 @@ namespace Tasking
             taskName.text = myTask.name;
             taskAssignee.text = myTask.assignee;
             taskStatusDropdown.value = (int)myTask.status;
-            taskDueTime.text = myTask.dueDate.ToString("MMMM dd");
+            taskDueTime.text = new DateTime(DateTime.Now.Year, myTask.month, myTask.day).ToString("MMMM dd");
 
             // Поставить цвет фона переключателя статуса
             taskStatusBackground.color = TaskUIManager.Instance.TaskColor[myTask.status];
 
             // Скопировать дату окончания
-            dueDate = myTask.dueDate;
+            dueDay = myTask.day;
+            dueMonth = myTask.month;
         }
 
         // Метод для обновления статуса этой задачи
         public void UpdateStatus(int newState)
         {
-            TaskManager.Instance.UpdateTask(taskName.text, taskAssignee.text, (TaskManager.TaskingStatus)newState, dueDate);
+            TaskManager.Instance.UpdateTask(taskName.text, taskAssignee.text, (TaskManager.TaskingStatus)newState, dueDay, dueMonth);
             // Поставить цвет фона переключателя статуса
             taskStatusBackground.color = TaskUIManager.Instance.TaskColor[(TaskManager.TaskingStatus)newState];
         }

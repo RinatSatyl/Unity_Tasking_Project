@@ -3,6 +3,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Newtonsoft.Json;
 
 namespace Tasking
 {
@@ -21,13 +22,13 @@ namespace Tasking
             {
                 // Трансформировать TaskingTask объект с информацией в json
                 // Записать полученный string в массив
-                jsonInformationArray[count] = JsonUtility.ToJson(thisTask);
+                jsonInformationArray[count] = JsonConvert.SerializeObject(thisTask);
                 // Перейти к следующей ячейке
                 count++;
             }
 
             // Вернуть один Json файл со всей информацией
-            return JsonUtility.ToJson(jsonInformationArray);
+            return JsonConvert.SerializeObject(jsonInformationArray);
         }
         // Метод для конвертирования json информации в список задач для TaskManager
         private List<TaskManager.TaskingTask> FromJsonToTasks(string json)
@@ -36,15 +37,16 @@ namespace Tasking
             TaskManager.Instance.ClearTaskList();
 
             // Разбить полученный json файл на массив с отдельными json задачами
-            string[] jsonInformationArray = JsonUtility.FromJson<string[]>(json);
+            string[] jsonInformationArray = JsonConvert.DeserializeObject<string[]>(json);
 
             // Создать временный новый список задач
             List<TaskManager.TaskingTask> newTaskList = new List<TaskManager.TaskingTask>();
 
             foreach (string jsonTaskInformation in jsonInformationArray)
             {
+                Debug.Log(jsonTaskInformation);
                 // Трансформировать полученую json инфо в TaskingTask объект.
-                TaskManager.TaskingTask receivedTask = JsonUtility.FromJson<TaskManager.TaskingTask>(jsonTaskInformation);
+                TaskManager.TaskingTask receivedTask = JsonConvert.DeserializeObject<TaskManager.TaskingTask>(jsonTaskInformation);
                 // Добавить полученный объект задачи в новый список задач
                 newTaskList.Add(receivedTask);
             }
@@ -56,13 +58,15 @@ namespace Tasking
         public void Save()
         {
             string tasksJson = FromTasksToJson();
+            Debug.Log(tasksJson);
             PlayerPrefs.SetString(SAVED_TASKS_PLAYERPREFS_KEY, tasksJson);
         }
         // Метод для загрузки списка задач с PlayerPrefs
         public void Load()
         {
             string tasksJson = PlayerPrefs.GetString(SAVED_TASKS_PLAYERPREFS_KEY);
-            FromJsonToTasks(tasksJson);
+            Debug.Log(tasksJson);
+            TaskManager.Instance.ApplyNewTaskList(FromJsonToTasks(tasksJson));
         }
     }
 }
