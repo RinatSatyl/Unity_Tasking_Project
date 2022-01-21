@@ -30,9 +30,9 @@ namespace Tasking
         // Статус задачи
         public enum TaskingStatus : int
         {
-            COMPLETED = 0,
-            IN_PROGRESS = 1,
-            OPEN = 2,
+            OPEN = 0,
+            COMPLETED = 1,
+            IN_PROGRESS = 2,
             REVIEWING = 3
         }
 
@@ -106,14 +106,6 @@ namespace Tasking
         public void ApplyNewTaskList(List<TaskingTask> newTaskList)
         {
             taskList = newTaskList;
-        }
-
-        private void Update()
-        {
-            if (taskList.Count < 5)
-            {
-                CreateTask("Тестовое задача", "Алексеев Алексей", TaskingStatus.COMPLETED, DateTime.Now);
-            }
         }
     }
 }

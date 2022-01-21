@@ -26,7 +26,9 @@ namespace Tasking
         // Публичная ссылка на taskName
         public string TaskName { get { return thisTaskName; } }
 
-        private void Start()
+        // Метод
+        // Извлекает информацию задачи и передаёт её UI элементам
+        public void SetInformation(TaskManager.TaskingTask myTask)
         {
             // Заполнить dropdown опции возможными статусами задачи
             for (int i = 0; i < TaskManager.Instance.PossibleTaskStatuses; i++)
@@ -34,12 +36,7 @@ namespace Tasking
                 string statusName = ((TaskManager.TaskingStatus)i).ToString(); ;
                 taskStatusDropdown.options.Add(new TMP_Dropdown.OptionData(statusName));
             }
-        }
 
-        // Метод
-        // Извлекает информацию задачи и передаёт её UI элементам
-        public void SetInformation(TaskManager.TaskingTask myTask)
-        {
             // Задать текст название задачи, кому поручено, текущий статус, дату окончания
             taskName.text = myTask.name;
             taskAssignee.text = myTask.assignee;
@@ -57,6 +54,8 @@ namespace Tasking
         public void UpdateStatus(int newState)
         {
             TaskManager.Instance.UpdateTask(taskName.text, taskAssignee.text, (TaskManager.TaskingStatus)newState, dueDate);
+            // Поставить цвет фона переключателя статуса
+            taskStatusBackground.color = TaskUIManager.Instance.TaskColor[(TaskManager.TaskingStatus)newState];
         }
     }
 }
