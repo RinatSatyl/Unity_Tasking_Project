@@ -1,8 +1,6 @@
 ﻿// Класс для контролирования показываемой информации в ячейке в списке задач
 // Так же хранит в себе ссылку на задачу
 
-using System.Collections;
-using System.Collections.Generic;
 using System;
 using UnityEngine;
 using UnityEngine.UI;
@@ -19,26 +17,27 @@ namespace Tasking
         [SerializeField] TMP_Text taskDueTime;
         [SerializeField] TMP_Dropdown taskStatusDropdown;
 
-        // дата задачи
+        // Дата окончания задачи
         int dueDay = 0;
         int dueMonth = 0;
-        string thisTaskName = string.Empty;
+        // Id задачи
+        string thisTaskId = string.Empty;
 
-        // Публичная ссылка на taskName
-        public string TaskName { get { return thisTaskName; } }
+        // Публичные ссылки на ID и статус задачи
+        public string TaskID { get { return thisTaskId; } }
         public int TaskStatus { get { return taskStatusDropdown.value; } }
 
         // Метод
         // Извлекает информацию задачи и передаёт её UI элементам
         public void SetInformation(TaskingTask receivedTask)
         {
-            thisTaskName = receivedTask.id;
+            // Сохранить id задачи
+            thisTaskId = receivedTask.id;
 
             // Заполнить dropdown опции возможными статусами задачи
-            for (int i = 0; i < TaskManager.Instance.PossibleTaskStatuses; i++)
+            for (int i = 0; i < TaskingManager.Instance.PossibleTaskStatuses; i++)
             {
-                string statusName = TaskUIManager.Instance.TaskStatusName[(TaskManager.TaskingStatus)i];
-                taskStatusDropdown.options.Add(new TMP_Dropdown.OptionData(statusName));
+                taskStatusDropdown.options.Add(new TMP_Dropdown.OptionData(TaskingUIManager.Instance.TaskStatusName[(TaskingStatus)i]));
             }
 
             // Задать текст название задачи, кому поручено, текущий статус, дату окончания
@@ -48,7 +47,7 @@ namespace Tasking
             taskDueTime.text = new DateTime(DateTime.Now.Year, receivedTask.month, receivedTask.day).ToString("MMMM dd");
 
             // Поставить цвет фона переключателя статуса
-            taskStatusBackground.color = TaskUIManager.Instance.TaskColor[(TaskManager.TaskingStatus)receivedTask.status];
+            taskStatusBackground.color = TaskingUIManager.Instance.TaskColor[(TaskingStatus)receivedTask.status];
 
             // Скопировать дату окончания
             dueDay = receivedTask.day;
@@ -60,13 +59,13 @@ namespace Tasking
         // Метод для обновления статуса этой задачи
         public void UpdateStatus(int newState)
         {
-            TaskManager.Instance.UpdateTask(taskName.text, taskAssignee.text, (TaskManager.TaskingStatus)newState, dueDay, dueMonth);
+            TaskingManager.Instance.UpdateTask(thisTaskId, taskName.text, taskAssignee.text, (TaskingStatus)newState, dueDay, dueMonth);
             // Поставить цвет фона переключателя статуса
-            taskStatusBackground.color = TaskUIManager.Instance.TaskColor[(TaskManager.TaskingStatus)newState];
+            taskStatusBackground.color = TaskingUIManager.Instance.TaskColor[(TaskingStatus)newState];
         }
         public void DeleteTask()
         {
-            TaskManager.Instance.DeleteTask(thisTaskName);
+            TaskingManager.Instance.DeleteTask(thisTaskId);
         }
 
         private void OnDestroy()

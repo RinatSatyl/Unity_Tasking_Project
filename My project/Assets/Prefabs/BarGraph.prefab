@@ -25,7 +25,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8020276448538122830}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -838, y: -494, z: -285}
+  m_LocalPosition: {x: -869.12, y: -494, z: -285}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -54,7 +54,7 @@ MonoBehaviour:
   offsetBetweenZRow: 0.5
   animationSpeed: 3
   graphAnimation: 2
-  barPrefab: {fileID: 3270554237759918115, guid: 6e321fc2afeafcb48935a819cfa7d769, type: 3}
+  barPrefab: {fileID: 3270554237759918115, guid: d4e25c0df375df54db467e5d137fcdb9, type: 3}
   barColorProperty: 1
   barScaleFactor: 1
   GraphRef: {fileID: 7617952447880570657, guid: 8cfb9fb4bf046474399ed32661948261, type: 3}

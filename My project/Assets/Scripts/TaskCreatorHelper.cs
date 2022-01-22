@@ -1,15 +1,15 @@
-﻿using System;
+﻿// Класс помошник для окна создания задачи
+
+using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
 
 namespace Tasking
 {
-    public class TaskCreatorUI : MonoBehaviour
+    public class TaskCreatorHelper : MonoBehaviour
     {
-        const float FLASH_DURATION = 0.2f;
+        const float FLASH_DURATION = 0.2f; // Длительность "моргания" когда пользователь не ввёл назавние задачи
 
         // ссылки на объекты в префабе
         [SerializeField] TMP_InputField taskName;
@@ -18,18 +18,26 @@ namespace Tasking
         [SerializeField] TMP_Dropdown taskDueTimeMonth;
         [SerializeField] TMP_Dropdown taskStatus;
 
+        Animator myAnimator;
+
         private void OnEnable()
         {
+            if (myAnimator == null)
+            {
+                myAnimator = GetComponent<Animator>();
+            }
+
+            myAnimator.Play("OnEnable");
+            myAnimator.Update(0);
+
             taskStatus.options.Clear();
             taskDueTimeMonth.options.Clear();
 
-            // Заполнить dropdown опции возможными статусами задачи
-            for (int i = 0; i < TaskManager.Instance.PossibleTaskStatuses; i++)
+            // Заполнить dropdown опции возможными статусами задачи/датой
+            for (int i = 0; i < TaskingManager.Instance.PossibleTaskStatuses; i++)
             {
-                string statusName = TaskUIManager.Instance.TaskStatusName[(TaskManager.TaskingStatus)i];
-                taskStatus.options.Add(new TMP_Dropdown.OptionData(statusName));
+                taskStatus.options.Add(new TMP_Dropdown.OptionData(TaskingUIManager.Instance.TaskStatusName[(TaskingStatus)i]));
             }
-
             for (int i = 0; i < 12; i++)
             {
                 taskDueTimeMonth.options.Add(new TMP_Dropdown.OptionData(new DateTime(DateTime.Now.Year, i + 1, 1).ToString("MMM")));
@@ -37,24 +45,27 @@ namespace Tasking
 
             taskName.text = string.Empty;
             taskAssignee.text = string.Empty;
-            taskStatus.value = 0;
             taskStatus.gameObject.transform.GetChild(0).GetComponent<TMP_Text>().text = taskStatus.options[0].text;
-            taskDueTimeMonth.value = 0;
             taskDueTimeMonth.gameObject.transform.GetChild(0).GetComponent<TMP_Text>().text = taskDueTimeMonth.options[0].text;
+
+            taskStatus.value = 0;
+            taskDueTimeDay.value = 0;
+            taskDueTimeMonth.value = 0;
             UpdateDaysInMonth(0);
         }
-
-        public void UpdateDaysInMonth(int value)
+        // Метод для обновления списка с днями месяца
+        public void UpdateDaysInMonth(int newMonth)
         {
             int currentChoosenDay = taskDueTimeDay.value;
 
             taskDueTimeDay.options.Clear();
 
-            for (int i = 0; i < DateTime.DaysInMonth(DateTime.Now.Year, value + 1); i++)
+            // Заполнить список дней днями в месяце
+            for (int i = 0; i < DateTime.DaysInMonth(DateTime.Now.Year, newMonth + 1); i++)
             {
                 taskDueTimeDay.options.Add(new TMP_Dropdown.OptionData((i + 1).ToString()));
             }
-
+            // Переместить курсор выбранного для если выбранный ранне день превышает количество дней в новом месяце
             if (currentChoosenDay > taskDueTimeDay.options.Count)
             {
                 taskDueTimeDay.value = taskDueTimeDay.options.Count;
@@ -62,26 +73,27 @@ namespace Tasking
 
             taskDueTimeDay.gameObject.transform.GetChild(0).GetComponent<TMP_Text>().text = taskDueTimeDay.options[taskDueTimeDay.value].text;
         }
-
+        // Метод для создания задачи с указанными данными 
         public void CreateTask()
         {
+            // Если строка с названием задачи пустая, не создавать задачу
+            // моргнуть чтоб дать пользователю знать что поле обязательно нужно заполнить
             if (taskName.text == string.Empty || taskName.text == " ")
             {
                 StartCoroutine(FlashInputFields());
                 return;
             }
 
-            TaskManager.Instance.CreateTask(taskName.text, taskAssignee.text, (TaskManager.TaskingStatus)taskStatus.value, taskDueTimeDay.value + 1, taskDueTimeMonth.value + 1);
+            TaskingManager.Instance.CreateTask(taskName.text, taskAssignee.text, (TaskingStatus)taskStatus.value, taskDueTimeDay.value + 1, taskDueTimeMonth.value + 1);
+            // Убрать окно
             gameObject.SetActive(false);
         }
 
         IEnumerator FlashInputFields()
         {
             taskName.interactable = false;
-            taskAssignee.interactable = false;
             yield return new WaitForSeconds(FLASH_DURATION);
             taskName.interactable = true;
-            taskAssignee.interactable = true;
         }
     }
 }

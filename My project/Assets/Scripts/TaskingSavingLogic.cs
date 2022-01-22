@@ -7,44 +7,41 @@ using Newtonsoft.Json;
 
 namespace Tasking
 {
-    public class TaskSavingManager : MonoBehaviour
+    public class TaskingSavingLogic : MonoBehaviour
     {
         private const string SAVED_TASKS_PLAYERPREFS_KEY = "Tasks_Tasks";
 
         // Метод для конвертирования списка задач в один json файл
         private string FromTasksToJson()
         {
-            // Создать массив размером с количеством задач в списке для хранения json информации каждой задачи
-            string[] jsonInformationArray = new string[TaskManager.Instance.TaskList.Count];
+            // Создать массив размером с количеством задач в списке, для хранения json информации каждой задачи
+            string[] jsonInformationArray = new string[TaskingManager.Instance.TaskList.Count];
 
             int count = 0;
-            foreach(TaskingTask thisTask in TaskManager.Instance.TaskList)
+            foreach(TaskingTask thisTask in TaskingManager.Instance.TaskList)
             {
-                // Трансформировать TaskingTask объект с информацией в json
-                // Записать полученный string в массив
-                Debug.Log(thisTask.day + " " + thisTask.month);
+                // Трансформировать TaskingTask объект с информацией в json и записать полученный string в массив
                 jsonInformationArray[count] = JsonConvert.SerializeObject(thisTask, Formatting.Indented);
                 // Перейти к следующей ячейке
                 count++;
             }
 
-            // Вернуть один Json файл со всей информацией
+            // Вернуть один Json string со всей информацией
             return JsonConvert.SerializeObject(jsonInformationArray, Formatting.Indented);
         }
-        // Метод для конвертирования json информации в список задач для TaskManager
+        // Метод для конвертирования json информации в задачи, добавления загруженых задач в список задач
         private void FromJsonToTasks(string json)
         {
-            // Почистить список задач
-            TaskManager.Instance.ClearTaskList();
+            // Очистить список задач
+            TaskingManager.Instance.ClearTaskList();
 
-            // Разбить полученный json файл на массив с отдельными json задачами
+            // Разбить полученный json файл на массив с отдельными json задачи
             string[] jsonInformationArray = JsonConvert.DeserializeObject<string[]>(json);
 
             for (int i = 0; i < jsonInformationArray.Length; i++)
             {
-                // Трансформировать полученую json инфо в TaskingTask объект.
-                // Добавить полученный объект задачи в новый список задач
-                TaskManager.Instance.CreateTask(JsonConvert.DeserializeObject<TaskingTask>(jsonInformationArray[i]));
+                // Трансформировать полученую json инфо в TaskingTask объект и добавить полученный объект задачи в список задач
+                TaskingManager.Instance.CreateTask(JsonConvert.DeserializeObject<TaskingTask>(jsonInformationArray[i]));
             }
         }
 
@@ -52,14 +49,14 @@ namespace Tasking
         public void Save()
         {
             string tasksJson = FromTasksToJson();
-            Debug.Log(tasksJson);
+            Debug.Log("Сохранено - " + tasksJson);
             PlayerPrefs.SetString(SAVED_TASKS_PLAYERPREFS_KEY, tasksJson);
         }
         // Метод для загрузки списка задач с PlayerPrefs
         public void Load()
         {
             string tasksJson = PlayerPrefs.GetString(SAVED_TASKS_PLAYERPREFS_KEY);
-            Debug.Log(tasksJson);
+            Debug.Log("Загружено - " + tasksJson);
             FromJsonToTasks(tasksJson);
         }
     }

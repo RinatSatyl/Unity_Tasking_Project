@@ -10,44 +10,52 @@ namespace Tasking
 {
     // Стракт задачи с информацией
     [System.Serializable]
-    public class TaskingTask
+    public struct TaskingTask
     {
-        public string name;
-        public string assignee;
-        public int status;
-        public int day;
-        public int month;
-        public string id;
+        public string name; // Название/Заголовок задачи
+        public string assignee; // Кому назначена
+        public int status; // Статус задачи
+        public int day; // День срока окончания
+        public int month; // Месяц срока окончания
+        public string id; // Уникальный ID задачи
 
-        public TaskingTask(string name, string assignee, int status, int day, int month)
+        public TaskingTask(string name, string assignee, int status, int day, int month, string id = "")
         {
             this.name = name;
             this.assignee = assignee;
             this.status = status;
             this.day = day;
             this.month = month;
-            id = Guid.NewGuid().ToString();
 
+            if (id != "")
+            {
+                this.id = id;
+            }
+            else
+            {
+                this.id = Guid.NewGuid().ToString();
+            }
         }
     }
 
-    public class TaskManager : MonoBehaviour
+    // Стракт статуса задачи
+    [System.Serializable]
+    public enum TaskingStatus : int
     {
-        // Статус задачи
-        [System.Serializable]
-        public enum TaskingStatus : int
-        {
-            OPEN = 0,
-            COMPLETED = 1,
-            IN_PROGRESS = 2,
-            REVIEWING = 3
-        }
+        OPEN = 0,
+        COMPLETED = 1,
+        IN_PROGRESS = 2,
+        REVIEWING = 3
+    }
 
+    public class TaskingManager : MonoBehaviour
+    {
         // Список задач
         List<TaskingTask> taskList = new List<TaskingTask>();
 
         // Публичная только для чтения ссылка на список задач
         public List<TaskingTask> TaskList { get { return taskList; } }
+        // Количество состояний статуса задачи
         public int PossibleTaskStatuses = 4;
 
         // Эвенты для обновления UI
@@ -57,25 +65,25 @@ namespace Tasking
         [SerializeField] UnityEvent TaskOnClear;
 
         // Статичная ссылка на TaskManager, для легкого доступа
-        public static TaskManager Instance;
+        public static TaskingManager Instance;
 
         private void Start()
         {
             Instance = this;
         }
 
-        // Метод добавляющии задачу с указаной информацией в список задач 
+        // Метод для создания задачи с указаной информацией
         public void CreateTask(string taskName, string taskAssignee, TaskingStatus taskStatus, int day, int month)
         {
-            // Создать новый объект задачи
-            // Добавит объект в список задач
+            // Создать новый объект задачи и добавит его в список задач
             CreateTask(new TaskingTask(taskName, taskAssignee, (int)taskStatus, day, month));
         }
+        // Метод для добавления задачи в список задач. 
         public void CreateTask(TaskingTask newTask)
         {
             // Добавит объект в список задач
             taskList.Add(newTask);
-            // Вызвать эвент с ссылкой на объект задачи
+            // Вызвать эвент о создании новой задачи с ссылкой на объект задачи
             TaskCreated.Invoke(newTask);
         }
         // Метод для удаления задачи с списка задач
@@ -87,32 +95,32 @@ namespace Tasking
                 {
                     TaskDeleted.Invoke(taskInList.id);
                     taskList.Remove(taskInList);
-                    return;
+                    break;
                 }
             }
         }
         // Метод для обновления информации задачи
-        public void UpdateTask(string taskName, string taskAssignee, TaskingStatus taskStatus, int day, int month)
+        public void UpdateTask(string thisTaskId, string taskName, string taskAssignee, TaskingStatus taskStatus, int day, int month)
         {
-            // Создать новый объект задачи
-            TaskingTask updatedTask = new TaskingTask(taskName, taskAssignee, (int)taskStatus, day, month);
-
             int count = 0;
             foreach (TaskingTask thisTask in taskList)
             {
-                if (thisTask.name == taskName)
+                if (thisTask.id == thisTaskId)
                 {
+                    // Создать новый объект задачи для замены
+                    TaskingTask updatedTask = new TaskingTask(taskName, taskAssignee, (int)taskStatus, day, month, thisTaskId);
+
+                    // Удалить задачу со старой информацией
+                    taskList.RemoveAt(count);
+                    // Вставить в слот удалённой задачи, новую задачу с обновлённой информацией
+                    taskList.Insert(count, updatedTask);
+
+                    // Оповестить программу о том что список задач был обновлён
+                    TaskUpdated.Invoke(updatedTask);
                     break;
                 }
                 count++;
             }
-            Debug.Log(count);
-
-            taskList.RemoveAt(count);
-            taskList.Insert(count, updatedTask);
-
-            // Вызвать эвент с ссылкой на объект задачи
-            TaskUpdated.Invoke(updatedTask);
         }
         // Метод для зачистки списка задач
         public void ClearTaskList()
