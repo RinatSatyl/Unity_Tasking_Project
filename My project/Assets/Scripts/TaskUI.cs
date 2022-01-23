@@ -63,6 +63,7 @@ namespace Tasking
             // Поставить цвет фона переключателя статуса
             taskStatusBackground.color = TaskingUIManager.Instance.TaskColor[(TaskingStatus)newState];
         }
+        // Метод для удаления задачи
         public void DeleteTask()
         {
             TaskingManager.Instance.DeleteTask(thisTaskId);

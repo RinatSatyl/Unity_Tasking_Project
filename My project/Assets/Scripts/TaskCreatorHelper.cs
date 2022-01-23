@@ -11,26 +11,28 @@ namespace Tasking
     {
         const float FLASH_DURATION = 0.2f; // Длительность "моргания" когда пользователь не ввёл назавние задачи
 
-        // ссылки на объекты в префабе
+        // ссылки на UI объекты
         [SerializeField] TMP_InputField taskName;
         [SerializeField] TMP_InputField taskAssignee;
         [SerializeField] TMP_Dropdown taskDueTimeDay;
         [SerializeField] TMP_Dropdown taskDueTimeMonth;
         [SerializeField] TMP_Dropdown taskStatus;
 
-        Animator myAnimator;
+        Animator myAnimator; // Аниматор окна создания задачи
 
         private void OnEnable()
         {
+            // Получить аниматор (если нет на его ссылки)
             if (myAnimator == null)
             {
                 myAnimator = GetComponent<Animator>();
             }
+            
+            myAnimator.Play("OnEnable"); // Проиграть анимацию при появлении окна
+            myAnimator.Update(0); // Сразу же применить анимацию 
 
-            myAnimator.Play("OnEnable");
-            myAnimator.Update(0);
-
-            taskStatus.options.Clear();
+            // Очистить dropdown списки
+            taskStatus.options.Clear(); 
             taskDueTimeMonth.options.Clear();
 
             // Заполнить dropdown опции возможными статусами задачи/датой
@@ -43,14 +45,17 @@ namespace Tasking
                 taskDueTimeMonth.options.Add(new TMP_Dropdown.OptionData(new DateTime(DateTime.Now.Year, i + 1, 1).ToString("MMM")));
             }
 
+            // Очистить поля ввода
             taskName.text = string.Empty;
             taskAssignee.text = string.Empty;
+            // Поставить превью текст dropdown на значение первого объекта в списке            
             taskStatus.gameObject.transform.GetChild(0).GetComponent<TMP_Text>().text = taskStatus.options[0].text;
             taskDueTimeMonth.gameObject.transform.GetChild(0).GetComponent<TMP_Text>().text = taskDueTimeMonth.options[0].text;
-
+            // Сбросить значение dropdown
             taskStatus.value = 0;
             taskDueTimeDay.value = 0;
             taskDueTimeMonth.value = 0;
+            // Обновить количество дней в месяце
             UpdateDaysInMonth(0);
         }
         // Метод для обновления списка с днями месяца
